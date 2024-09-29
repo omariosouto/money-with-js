@@ -38,8 +38,8 @@ export class Money {
   }
 
   formatToCurrency(currency: "BRL" | "USD" = "USD"): string {
-    // fix decimal separator and add R$
-    if(currency === "BRL") {
+    const commaSeparatedCurrencies = new Set(["BRL"]);
+    if(commaSeparatedCurrencies.has(currency)) {
       return `R$ ${this.value.toFixed(2).split('.').join(',')}`;
     }
 
