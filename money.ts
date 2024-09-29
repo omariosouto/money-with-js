@@ -1,4 +1,5 @@
 import Decimal from 'decimal.js';
+import { z } from "zod";
 
 export class Money {
   private value: Decimal;
@@ -36,17 +37,54 @@ export class Money {
     return this.value.toFixed(2); // Formata com duas casas decimais
   }
 
+  formatToCurrency(currency: "BRL" | "USD" = "USD"): string {
+    // fix decimal separator and add R$
+    if(currency === "BRL") {
+      return `R$ ${this.value.toFixed(2).split('.').join(',')}`;
+    }
+
+    return `$ ${this.value.toFixed(2)}`;
+  }
+
   // Método para obter o valor em centavos
   toCents(): number {
     return this.value.times(100).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
   }
 }
 
-
-const purchasedItems = new Money(0);
-
 console.log(
-  purchasedItems
+  new Money(0)
   .add("1")
   .toString()
+);
+
+// ================================================================================
+
+const moneyValidator = z.custom<Money>((value) => {
+  if (typeof value === "string" || typeof value === "number") {
+    return new Money(value); // A validação passa, então retornamos true ou a própria instância para confirmar
+  }
+  throw new Error("Invalid value for Money");
+});
+
+const MoneySchema = moneyValidator.transform((value) => {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return new Money(value);
+  }
+  return value; // Se for uma instância de Money, retornamos o valor diretamente
+});
+
+const User = z.object({
+  name: z.string(),
+  age: z.number(),
+  balance: MoneySchema, // Usando o schema customizado
+});
+
+console.log(
+  User.parse({
+  name: "John Doe",
+    age: 30,
+    balance: "1000",
+  })
+  .balance.formatToCurrency("BRL")
 );

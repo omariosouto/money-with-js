@@ -70,6 +70,7 @@ console.log("Terceiro Pagamento (BigDecimal): ",
 
 // Como lidar com dinheiro?
 // -> money.ts
+console.log("\n\n\n");
 import("./money");
 
 // -> Você acabou de ver uma aula extra e gratuita do gratuita: https://crudcomqualidade.io/
